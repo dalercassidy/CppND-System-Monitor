@@ -98,17 +98,48 @@ long LinuxParser::UpTime() {
  }
 
 // TODO: Read and return the number of jiffies for the system
-long LinuxParser::Jiffies() { return 0; }
+long LinuxParser::Jiffies() { 
+  return 0; 
+}
+
+// TODO: Read and return the number of active jiffies for the system
+long LinuxParser::ActiveJiffies() { 
+  return 0; 
+}
+
+// TODO: Read and return the number of idle jiffies for the system
+long LinuxParser::IdleJiffies() { 
+  return 0; 
+}
+
+//Processor
+float LinuxParser::SystemCpuUtilization() {
+  string line, cpu;
+  long user, nice, system, idle, iowait, irq, softirq, steal, Idle, NonIdle, Total;
+  float systemCpuUtilization;
+
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    linestream >> cpu >> user >> nice >> system >> idle >> iowait >> irq >> softirq >> steal;
+  }
+
+  Idle = idle + iowait;
+  NonIdle = user + nice + system + irq + softirq + steal;
+  Total = Idle + NonIdle;
+  
+  systemCpuUtilization = (Total - Idle) * 1.0 / Total;
+
+  return systemCpuUtilization;
+
+}
+
+
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
-
-// TODO: Read and return the number of active jiffies for the system
-long LinuxParser::ActiveJiffies() { return 0; }
-
-// TODO: Read and return the number of idle jiffies for the system
-long LinuxParser::IdleJiffies() { return 0; }
 
 // TODO: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() { return {}; }
@@ -151,6 +182,11 @@ int LinuxParser::RunningProcesses() {
   }
   return value; 
 }
+
+
+
+
+
 
 // TODO: Read and return the command associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
