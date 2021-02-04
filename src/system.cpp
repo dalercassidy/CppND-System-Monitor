@@ -32,7 +32,8 @@ vector<Process>& System::Processes() {
         process.CpuUtilization(LinuxParser::CpuUtilization(pid));
         processes_.push_back(process);
     }
-
+    
+    std::sort(processes_.begin(), processes_.end());
     return processes_; 
 }
 
