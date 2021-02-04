@@ -17,7 +17,9 @@ class Process {
   std::string Command();                   // DONE: See src/process.cpp
   void Command(std::string command);
 
-  float CpuUtilization();                  // TODO: See src/process.cpp
+  float CpuUtilization();                  // DONE: See src/process.cpp
+  void CpuUtilization(float cpuUtilization); 
+
   std::string Ram();                       // DONE: See src/process.cpp
   void Ram(std::string ram);
 
