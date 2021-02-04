@@ -32,9 +32,10 @@ string Process::User() { return user_; }
 
 void Process::User(std::string user) { user_ = user; }
 
-// TODO: Return the age of this process (in seconds)
-long int Process::UpTime() { return 0; }
-
+// DONE: Return the age of this process (in seconds)
+long int Process::UpTime() { return upTime_; }
+void Process::UpTime(long int upTime) { upTime_ = upTime; } 
+ 
 // TODO: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function
 bool Process::operator<(Process const& a[[maybe_unused]]) const { return true; }

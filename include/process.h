@@ -18,10 +18,12 @@ class Process {
   void Command(std::string command);
 
   float CpuUtilization();                  // TODO: See src/process.cpp
-  std::string Ram();                       // TODO: See src/process.cpp
+  std::string Ram();                       // DONE: See src/process.cpp
   void Ram(std::string ram);
 
-  long int UpTime();                       // TODO: See src/process.cpp
+  long int UpTime();                       // DONE: See src/process.cpp
+  void UpTime(long int upTime); 
+
   bool operator<(Process const& a) const;  // TODO: See src/process.cpp
 
   // TODO: Declare any necessary private members
