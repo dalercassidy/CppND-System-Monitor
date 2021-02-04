@@ -27,6 +27,7 @@ vector<Process>& System::Processes() {
         process.Pid(pid);
         process.User(LinuxParser::User(pid));
         process.Command(LinuxParser::Command(pid));
+        process.Ram(LinuxParser::Ram(pid));
         processes_.push_back(process);
     }
 

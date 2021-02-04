@@ -24,7 +24,8 @@ string Process::Command() { return command_; }
 void Process::Command(std::string command) { command_ = command; }
 
 // TODO: Return this process's memory utilization
-string Process::Ram() { return string(); }
+string Process::Ram() { return ram_; }
+void Process::Ram(std::string ram) { ram_ = ram; }
 
 // TODO: Return the user (name) that generated this process
 string Process::User() { return user_; }
