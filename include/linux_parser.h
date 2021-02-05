@@ -27,7 +27,7 @@ int RunningProcesses();
 std::string OperatingSystem();
 std::string Kernel();
 
-//Processor
+// Processor
 float SystemCpuUtilization();
 
 // CPU
