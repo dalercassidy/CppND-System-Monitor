@@ -139,7 +139,35 @@ float LinuxParser::SystemCpuUtilization() {
 // DONE: Read and return the number of active jiffies for a PID
 long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
 
+float LinuxParser::CpuUtilization(int pid) {
+  
+  float processUptime{0}, totalTime{0}, cpuUtilization{0};
+  string line, value; 
+
+  processUptime = LinuxParser::UpTime(pid);
+
+  std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
+  if (filestream.is_open()) {
+    std::getline(filestream, line);
+    std::istringstream linestream(line);
+    for (int i = 1; i <= 13; i++) {
+      linestream >> value;
+    }
+    for (int i = 14; i <= 15; i++)
+    {
+      linestream >> value;
+      totalTime += std::stof(value) / sysconf(_SC_CLK_TCK); 
+    }  
+  
+    cpuUtilization = float(totalTime) / float(processUptime);
+
+  }
+  return cpuUtilization; 
+}
+
+
 // DONE: Read and return CPU utilization
+/*
 float LinuxParser::CpuUtilization(int pid) { 
   string line;
   string value;
@@ -172,6 +200,7 @@ float LinuxParser::CpuUtilization(int pid) {
   }
   return cpuUtilization; 
 }
+*/
 
 // DONE: Read and return the total number of processes
 int LinuxParser::TotalProcesses() { 
@@ -211,7 +240,6 @@ int LinuxParser::RunningProcesses() {
   return value; 
 }
 
-
 // DONE: Read and return the command associated with a process
 string LinuxParser::Command(int pid) {   
   string line; 
@@ -224,10 +252,8 @@ string LinuxParser::Command(int pid) {
 
 // DONE: Read and return the memory used by a process
 string LinuxParser::Ram(int pid) { 
-  string line;
-  string key; 
-  long int value;
-  string vmSize;
+  string line, key, vmSize; 
+  long int value;  
   
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatusFilename);
   if (filestream.is_open()) {
@@ -293,7 +319,7 @@ string LinuxParser::User(int pid) {
 // DONE: Read and return the uptime of a process
 long LinuxParser::UpTime(int pid) { 
   string line, value;
-  int upTime, processStartTime;
+  int upTime{0}, processStartTime;
 
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
   if (filestream.is_open()) {
