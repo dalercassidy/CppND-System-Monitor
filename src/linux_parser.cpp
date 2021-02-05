@@ -94,7 +94,7 @@ long LinuxParser::UpTime() {
     std::getline(stream, line);
     std::istringstream linestream(line);
     linestream >> uptime;
-  }
+  }  
   return uptime;
  }
 
@@ -136,18 +136,17 @@ float LinuxParser::SystemCpuUtilization() {
 
 }
 
-
-
-// TODO: Read and return the number of active jiffies for a PID
-// REMOVE: [[maybe_unused]] once you define the function
+// DONE: Read and return the number of active jiffies for a PID
 long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
 
-// TODO: Read and return CPU utilization
+// DONE: Read and return CPU utilization
 float LinuxParser::CpuUtilization(int pid) { 
   string line;
   string value;
-  long int utime, stime, cutime, cstime, starttime, seconds, totalTime;
-  float cpuUtilization;
+  long int cpuElement, upTime, startTime;
+  float totalTime, cpuUtilization, seconds;
+
+  upTime = LinuxParser::UpTime();
 
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
   if (filestream.is_open()) {
@@ -156,26 +155,23 @@ float LinuxParser::CpuUtilization(int pid) {
     for (int i = 1; i <= 13; i++) {
       linestream >> value;
     }
-    linestream >> utime;
-    linestream >> stime;
-    linestream >> cutime;
-    linestream >> cstime;
-
-    for (int i = 18; i <= 21; i++) {
-      linestream >> starttime;
+    for (int i = 14; i <= 15; i++)
+    {
+      linestream >> cpuElement;
+      totalTime += 1.0 * cpuElement / sysconf(_SC_CLK_TCK); 
     }
+    for (int i = 16; i <= 21; i++)
+    {
+      linestream >> value;       
+    }
+    linestream >> startTime;
 
-    totalTime = utime + stime;
-    seconds = utime - (starttime / sysconf(_SC_CLK_TCK));
+    seconds = upTime - (1.0 * startTime / sysconf(_SC_CLK_TCK));
 
-    if (seconds == 0)
-      cpuUtilization = 0;
-    else
-      cpuUtilization = 100 * ((totalTime * 1.0 / sysconf(_SC_CLK_TCK)) / seconds);    
-   
+    cpuUtilization = 100 * totalTime / seconds;
   }
   return cpuUtilization; 
- }
+}
 
 // DONE: Read and return the total number of processes
 int LinuxParser::TotalProcesses() { 
@@ -195,7 +191,6 @@ int LinuxParser::TotalProcesses() {
   }
   return value;  
 }
-
 
 // DONE: Read and return the number of running processes
 int LinuxParser::RunningProcesses() { 
@@ -218,7 +213,6 @@ int LinuxParser::RunningProcesses() {
 
 
 // DONE: Read and return the command associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Command(int pid) {   
   string line; 
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kCmdlineFilename);
@@ -229,7 +223,6 @@ string LinuxParser::Command(int pid) {
 }
 
 // DONE: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Ram(int pid) { 
   string line;
   string key; 
@@ -251,7 +244,6 @@ string LinuxParser::Ram(int pid) {
 }
 
 // DONE: Read and return the user ID associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Uid(int pid) {   
   string line;
   string key;
@@ -272,7 +264,6 @@ string LinuxParser::Uid(int pid) {
 }
 
 // DONE: Read and return the user associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::User(int pid) {   
   string userid = LinuxParser::Uid(pid);
   
@@ -300,11 +291,9 @@ string LinuxParser::User(int pid) {
 }
 
 // DONE: Read and return the uptime of a process
-// REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::UpTime(int pid) { 
-  string line;
-  string value;
-  int upTime;
+  string line, value;
+  int upTime, processStartTime;
 
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
   if (filestream.is_open()) {
@@ -313,8 +302,8 @@ long LinuxParser::UpTime(int pid) {
     for (int i = 0; i < 21; i++) {
       linestream >> value;
     }
-    linestream >> upTime;
-    upTime = upTime / sysconf(_SC_CLK_TCK);
+    linestream >> processStartTime;
+    upTime = LinuxParser::UpTime() - processStartTime / sysconf(_SC_CLK_TCK);
     return upTime;  
   }
   return upTime; 
